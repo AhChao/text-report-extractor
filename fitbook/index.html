@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>上課紀錄統計</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Page 1 -->
+        <div v-if="currentPage === 1" class="container page-one">
+            <h2 style="text-align: center;">上課紀錄統計</h2>
+            <div class="action-buttons">
+                <button v-if="hasSavedData" class="btn secondary-btn" @click="clearData" style="margin-right: 10px; border-color: #ff6b6b; color: #ff6b6b;">清除上次內容</button>
+                <button class="btn secondary-btn" @click="showModal = true">使用說明</button>
+            </div>
+            
+            <div class="text-area-wrapper">
+                <textarea v-model="rawInput" placeholder="請在此貼上您的預約紀錄..."></textarea>
+            </div>
+
+            <div class="floating-footer">
+                <button class="btn btn-primary" @click="generateReport">來看看課上的怎麼樣...</button>
+            </div>
+        </div>
+
+        <!-- Page 2 -->
+        <div v-if="currentPage === 2" class="container">
+            <div class="filter-header">
+                <button class="filter-btn" :class="{ active: selectedPeriod === '2025' }" @click="selectedPeriod = '2025'">2025</button>
+                <button class="filter-btn" :class="{ active: selectedPeriod === 'All' }" @click="selectedPeriod = 'All'">全部</button>
+                <button class="filter-btn palette-btn" @click="setRandomTheme" title="Change Theme">🎨</button>
+                <button class="filter-btn share-btn" @click="shareScreenshot" title="Share Screenshot">📷</button>
+            </div>
+            
+            <div id="capture-node" class="capture-area">
+                <!-- Editable Title -->
+                <div class="editable-title-container">
+                    <div v-if="!isEditingTitle" class="editable-title-text" @click="isEditingTitle = true">
+                        {{ pageTitle }} <span class="edit-icon">✏️</span>
+                    </div>
+                    <input 
+                        v-else 
+                        v-model="pageTitle" 
+                        class="editable-title-input" 
+                        @blur="isEditingTitle = false" 
+                        @keyup.enter="isEditingTitle = false"
+                        ref="titleInput"
+                        v-effect="isEditingTitle && $nextTick(() => $refs.titleInput.focus())"
+                    >
+                </div>
+
+                <div class="stat-card highlight">
+                    <div class="stat-label">總上課時間</div>
+                    <div class="stat-value">{{ filteredStats.totalDurationStr }}</div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">總課程數</div>
+                        <div class="stat-value">{{ filteredStats.totalCount }} <span class="stat-unit">堂</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">嘗試課程</div>
+                        <div class="stat-value">{{ filteredStats.uniqueCourses }} <span class="stat-unit">種</span></div>
+                    </div>
+                </div>
+
+                <!-- Advanced Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card" v-if="filteredStats.mostActiveMonth">
+                        <div class="stat-label">最勤勞的月份</div>
+                        <div class="stat-value" style="font-size: 20px;">
+                            {{ filteredStats.mostActiveMonth.month }}月上了 {{ filteredStats.mostActiveMonth.count }} 堂
+                        </div>
+                    </div>
+                    <div class="stat-card" v-if="filteredStats.longestStreak > 0">
+                        <div class="stat-label">最長連續上課</div>
+                        <div class="stat-value" style="font-size: 20px;">
+                            {{ filteredStats.longestStreak }} 週
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card longest-course-card" v-if="filteredStats.maxCourse">
+                    <div class="stat-label">最常上的課</div>
+                    <div class="course-title">{{ filteredStats.maxCourse.name }}</div>
+                    <div class="teacher-name">{{ filteredStats.maxCourse.teacher }}</div>
+                    <div class="course-meta">
+                        共 {{ filteredStats.maxCourse.count }} 堂 • {{ filteredStats.maxCourse.hours }} 小時
+                    </div>
+                </div>
+            </div>
+
+            <div class="distribution-section">
+                <div class="section-title">課程分佈</div>
+                <div v-for="(course, index) in filteredStats.distribution" :key="index" class="course-list-item">
+                    <div class="list-info">
+                        <div class="list-rank">{{ index + 1 }}</div>
+                        <div>
+                            <div class="list-name">{{ course.name }}</div>
+                            <div class="list-teacher" v-if="course.teacher !== 'Unknown Teacher'">{{ course.teacher }}</div>
+                        </div>
+                    </div>
+                    <div class="list-count">{{ course.count }} 堂</div>
+                </div>
+                <div v-if="filteredStats.distribution.length === 0" style="text-align: center; color: #999; padding: 20px;">
+                    無資料
+                </div>
+            </div>
+
+            <a class="back-link" @click="currentPage = 1">← 返回編輯</a>
+        </div>
+
+        <!-- Sticky Footer -->
+        <div class="footer">
+            我們不會儲存您的資料，僅在您的裝置上生成報告
+        </div>
+
+        <!-- Modal -->
+        <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div v-if="currentStep < 7">
+                        <div class="gallery-text">{{ guideSteps[currentStep] }}</div>
+                        <img :src="`guide-images/image${currentStep + 1}.png`" class="gallery-image" alt="Instruction Step">
+                    </div>
+                    <div v-else class="center-text-slide">
+                         {{ guideSteps[currentStep] }}
+                    </div>
+                </div>
+
+                <div class="modal-footer-nav">
+                    <div class="nav-controls">
+                        <button class="nav-btn" @click="prevStep" :disabled="currentStep === 0">◀</button>
+                        <span class="step-indicator">{{ currentStep + 1 }} / {{ guideSteps.length }}</span>
+                        <button class="nav-btn" @click="nextStep" :disabled="currentStep === guideSteps.length - 1">▶</button>
+                    </div>
+                    <button class="btn btn-primary" @click="showModal = false">確認</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/parser.js"></script>
+    <script src="js/stats.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

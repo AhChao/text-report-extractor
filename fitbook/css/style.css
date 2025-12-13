@@ -1,0 +1,600 @@
+:root {
+    --primary-color: #4A90E2;
+    --secondary-color: #50E3C2;
+    --text-color: #333;
+    --text-secondary: #666;
+    --bg-color: #f0f2f5;
+    --card-bg: #ffffff;
+    --footer-bg: #e0e0e0;
+    --modal-bg: rgba(0, 0, 0, 0.7);
+    --border-radius: 12px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    flex: 1;
+}
+
+/* Container - Mobile First (Full width with padding) */
+.container {
+    width: 100%;
+    padding: 16px;
+    padding-bottom: 100px;
+    /* Space for footer */
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.floating-footer {
+    position: fixed;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 500px;
+    z-index: 100;
+    pointer-events: none;
+    /* Let clicks pass through transparent areas if any */
+}
+
+.floating-footer .btn-primary {
+    margin-top: 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    pointer-events: auto;
+    /* Re-enable clicks on button */
+}
+
+/* Page 1 Styles */
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    /* Or space-between if you prefer */
+    margin-bottom: 20px;
+    gap: 10px;
+    /* Add gap for modern spacing */
+}
+
+.btn {
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s active, opacity 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.secondary-btn {
+    background-color: #fff;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), #2c72c1);
+    color: white;
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    margin-top: 20px;
+    box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+}
+
+.text-area-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    min-height: 300px;
+}
+
+textarea {
+    width: 100%;
+    flex: 1;
+    border: none;
+    font-size: 16px;
+    resize: none;
+    outline: none;
+    color: var(--text-color);
+    color: var(--text-color);
+    background: transparent;
+    /* Space for floating button */
+}
+
+/* Page 1 Specific Layout (Single Viewport) */
+.container.page-one {
+    height: 100dvh;
+    /* Use dynamic viewport height for mobile */
+    overflow: hidden;
+    /* Prevent body scroll */
+    padding-bottom: 0;
+    /* floating button is over it */
+}
+
+.page-one .text-area-wrapper {
+    flex: 1;
+    overflow: hidden;
+    /* textarea handles scroll */
+    margin-bottom: 20px;
+    /* slight spacing from bottom edge if needed */
+}
+
+.page-one textarea {
+    height: 100%;
+    overflow-y: auto;
+    padding-bottom: 150px;
+    /* Ensure text clears the floating button */
+}
+
+textarea::placeholder {
+    color: #aaa;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--footer-bg);
+    color: #777;
+    text-align: center;
+    padding: 12px;
+    font-size: 12px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+}
+
+/* Page 2 Styles */
+.filter-header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+    background: #fff;
+    padding: 5px;
+    border-radius: 25px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    width: fit-content;
+    align-self: center;
+}
+
+.filter-btn {
+    background: transparent;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 20px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.stat-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    text-align: center;
+}
+
+/* Editable Title Styles */
+.editable-title-container {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.editable-title-text {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--text-color);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.editable-title-text:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.edit-icon {
+    font-size: 16px;
+    margin-left: 8px;
+    opacity: 0.6;
+}
+
+.editable-title-input {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--text-color);
+    text-align: center;
+    width: 100%;
+    padding: 8px;
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    outline: none;
+    background: #fff;
+}
+
+.stat-card.highlight {
+    background: linear-gradient(135deg, var(--primary-color), #2c72c1);
+    color: white;
+}
+
+/* Palette Button */
+.palette-btn,
+.share-btn {
+    font-size: 20px;
+    padding: 5px 15px;
+    margin-left: 10px;
+    transition: transform 0.2s;
+}
+
+.palette-btn:active,
+.share-btn:active {
+    transform: rotate(45deg) scale(0.9);
+}
+
+.capture-area.capturing .edit-icon {
+    display: none;
+}
+
+.capture-area.capturing {
+    background: var(--bg-color);
+    /* Ensure background is captured */
+    padding: 20px;
+    /* Add some padding for the image */
+    margin: -20px;
+    /* Counteract padding to keep layout same? Or just add padding */
+    border-radius: 10px;
+}
+
+.stat-label {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.stat-unit {
+    font-size: 16px;
+    font-weight: normal;
+}
+
+/* Grid for smaller stats */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.stats-grid .stat-card {
+    margin-bottom: 0;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.stats-grid .stat-value {
+    font-size: 24px;
+}
+
+.longest-course-card {
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+}
+
+.longest-course-card::after {
+    content: "🏆";
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 40px;
+    opacity: 0.1;
+}
+
+.course-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.teacher-name {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.teacher-name::before {
+    content: '👤';
+    margin-right: 5px;
+}
+
+.course-meta {
+    font-size: 14px;
+    color: #888;
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+.distribution-section {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: var(--text-color);
+    padding-left: 10px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.course-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.course-list-item:last-child {
+    border-bottom: none;
+}
+
+.list-info {
+    display: flex;
+    align-items: center;
+}
+
+.list-rank {
+    width: 24px;
+    height: 24px;
+    background: #f0f2f5;
+    color: #666;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    margin-right: 12px;
+    font-weight: bold;
+}
+
+.course-list-item:nth-child(1) .list-rank {
+    background: #FFD700;
+    color: #fff;
+}
+
+.course-list-item:nth-child(2) .list-rank {
+    background: #C0C0C0;
+    color: #fff;
+}
+
+.course-list-item:nth-child(3) .list-rank {
+    background: #CD7F32;
+    color: #fff;
+}
+
+.list-name {
+    font-size: 16px;
+    color: var(--text-color);
+}
+
+.list-count {
+    font-weight: bold;
+    color: var(--primary-color);
+    background: rgba(74, 144, 226, 0.1);
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.back-link {
+    text-align: center;
+    color: #999;
+    text-decoration: none;
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--modal-bg);
+    display: flex;
+    align-items: flex-end;
+    /* Mobile sheet style */
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    width: 100%;
+    height: 90vh;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUp 0.3s;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.gallery-image {
+    width: 100%;
+    /* Force width to fill container minus padding */
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    object-fit: contain;
+}
+
+.gallery-text {
+    font-size: clamp(16px, 5vw, 20px);
+    /* Responsive font size */
+    line-height: 1.6;
+    text-align: center;
+    color: var(--text-color);
+    margin-bottom: 20px;
+    padding: 0 10px;
+    /* Extra internal padding */
+    max-width: 500px;
+    /* Prevent lines from getting too long on wide screens */
+}
+
+.center-text-slide {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    padding: 20px;
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.modal-footer-nav {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    /* Stack controls and confirm btn */
+    gap: 15px;
+}
+
+.nav-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.nav-btn {
+    background: none;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: #666;
+    cursor: pointer;
+}
+
+.step-indicator {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+@media (min-width: 768px) {
+    .modal-overlay {
+        align-items: center;
+    }
+
+    .modal-content {
+        width: 90%;
+        max-width: 600px;
+        height: 80vh;
+        border-radius: 20px;
+    }
+
+    .gallery-image {
+        max-height: 400px;
+        object-fit: contain;
+    }
+}
