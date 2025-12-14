@@ -92,15 +92,23 @@ const parseRawData = function (rawInput) {
         }
     }
     // Extract User Name
-    // Rule: Look for "Yoga" line. Next line is Name if text.
+    // Extract User Name
+    // Rule: Check first line for "Yoga". 
+    // If found, check line 2 (index 1). If blank/noise, check line 3 (index 2).
     let userName = null;
-    for(let i = 0; i < lines.length - 1; i++) {
-        if(lines[i].toLowerCase() === 'yoga') {
-            const nextLine = lines[i + 1];
-            if(nextLine && !isNoise(nextLine) && !dateRegex.test(nextLine)) {
-                userName = nextLine;
-                break;
+    if(lines.length > 0) {
+        if(lines[0].toLowerCase() === 'yoga') {
+            // Check line 1
+            if(lines[1] && !isNoise(lines[1]) && !dateRegex.test(lines[1])) {
+                userName = lines[1];
             }
+            // If line 1 is not valid (assumed blank/noise), check line 2
+            else if(lines[2] && !isNoise(lines[2]) && !dateRegex.test(lines[2])) {
+                userName = lines[2];
+            }
+        } else if(!isNoise(lines[0]) && !dateRegex.test(lines[0])) {
+            // If first line is NOT "Yoga" and not noise/date, assume it is the name
+            userName = lines[0];
         }
     }
 

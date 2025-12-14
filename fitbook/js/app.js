@@ -47,9 +47,9 @@ createApp({
 
             if(detectedUserName.value) {
                 if(selectedPeriod.value === '2025') {
-                    pageTitle.value = `${detectedUserName.value} 2025 的練習紀錄`;
+                    pageTitle.value = `${detectedUserName.value} 2025 的瑜珈練習紀錄`;
                 } else {
-                    pageTitle.value = `${detectedUserName.value} 的練習紀錄`;
+                    pageTitle.value = `${detectedUserName.value} 的瑜伽練習紀錄`;
                 }
             } else {
                 pageTitle.value = "很棒的練習！繼續努力！";
@@ -87,6 +87,23 @@ createApp({
         const clearData = () => {
             if(confirm('確定要清除所有內容嗎？')) {
                 localStorage.removeItem('fitbook_raw');
+
+                // Clear Theme
+                localStorage.removeItem('fitbook_theme_primary');
+                localStorage.removeItem('fitbook_theme_bg');
+                localStorage.removeItem('fitbook_theme_card_bg');
+                localStorage.removeItem('fitbook_theme_text');
+                localStorage.removeItem('fitbook_theme_text_secondary');
+                localStorage.removeItem('fitbook_theme_modal_bg');
+
+                // Reset to Default Theme
+                document.documentElement.style.setProperty('--primary-color', '#4A90E2');
+                document.documentElement.style.setProperty('--bg-color', '#f0f2f5');
+                document.documentElement.style.setProperty('--card-bg', '#ffffff');
+                document.documentElement.style.setProperty('--text-color', '#333');
+                document.documentElement.style.setProperty('--text-secondary', '#666');
+                document.documentElement.style.setProperty('--modal-bg', 'rgba(0, 0, 0, 0.7)');
+
                 rawInput.value = '';
                 hasSavedData.value = false;
                 parsedData.value = [];
@@ -102,6 +119,23 @@ createApp({
                 rawInput.value = saved;
                 hasSavedData.value = true;
                 generateReport();
+            }
+
+            // Restore Theme
+            const tPrimary = localStorage.getItem('fitbook_theme_primary');
+            const tBg = localStorage.getItem('fitbook_theme_bg');
+            const tCardBg = localStorage.getItem('fitbook_theme_card_bg');
+            const tText = localStorage.getItem('fitbook_theme_text');
+            const tTextSec = localStorage.getItem('fitbook_theme_text_secondary');
+            const tModalBg = localStorage.getItem('fitbook_theme_modal_bg');
+
+            if(tPrimary && tBg) {
+                document.documentElement.style.setProperty('--primary-color', tPrimary);
+                document.documentElement.style.setProperty('--bg-color', tBg);
+                if(tCardBg) document.documentElement.style.setProperty('--card-bg', tCardBg);
+                if(tText) document.documentElement.style.setProperty('--text-color', tText);
+                if(tTextSec) document.documentElement.style.setProperty('--text-secondary', tTextSec);
+                if(tModalBg) document.documentElement.style.setProperty('--modal-bg', tModalBg);
             }
         });
 
@@ -200,7 +234,14 @@ createApp({
             document.documentElement.style.setProperty('--text-color', textColor);
             document.documentElement.style.setProperty('--text-secondary', textSecondary);
             document.documentElement.style.setProperty('--modal-bg', isDarkBg ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.7)');
-            document.documentElement.style.setProperty('--modal-bg', isDarkBg ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.7)');
+
+            // Save Theme to LocalStorage
+            localStorage.setItem('fitbook_theme_primary', p.hex);
+            localStorage.setItem('fitbook_theme_bg', bg.hex);
+            localStorage.setItem('fitbook_theme_card_bg', cardBg);
+            localStorage.setItem('fitbook_theme_text', textColor);
+            localStorage.setItem('fitbook_theme_text_secondary', textSecondary);
+            localStorage.setItem('fitbook_theme_modal_bg', isDarkBg ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.7)');
         };
 
         const shareScreenshot = async () => {
